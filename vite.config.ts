@@ -8,7 +8,7 @@ export default defineConfig(() => {
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        '@': path.resolve(import.meta.dirname, '.'),
       },
     },
     server: {
@@ -19,4 +19,18 @@ export default defineConfig(() => {
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };
+});
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000,
+    host: '0.0.0.0',
+    // เพิ่มบรรทัดด้านล่างนี้เพื่อบังคับให้ระบบส่งสัญญาณผ่านเว็บบล็อกได้เสถียรขึ้น
+    hmr: {
+      clientPort: 3000,
+    },
+  },
 });
