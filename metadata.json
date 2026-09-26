@@ -1,0 +1,6 @@
+{
+  "name": "TCAS70 Mission Control",
+  "description": "เว็บแอปพลิเคชันวางแผนเตรียมสอบ TCAS70 สู้เพื่อฝัน KKUIC และมหาวิทยาลัยในฝัน พร้อมระบบจัดการผู้ใช้ การค้นหา และแผนการเรียนรู้แบบครบวงจร",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

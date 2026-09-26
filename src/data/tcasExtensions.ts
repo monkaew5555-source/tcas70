@@ -1,0 +1,82 @@
+import { FinancialPlan, QuestItem, ExamScoreRecord } from '../types';
+
+export const defaultFinancialPlan: FinancialPlan = {
+  tuitionFeePerTerm: 48000,
+  termsPerYear: 2,
+  yearsOfStudy: 4,
+  dormFeePerMonth: 4500,
+  livingCostPerMonth: 6500,
+  travelCostPerMonth: 1200,
+  deviceAndBooksPerYear: 10000,
+  tcasPrepCost: 5000,
+  familySupportPerMonth: 8500,
+  scholarshipPerYear: 0,
+  studentLoanPerTerm: 0,
+  personalSavings: 10000,
+  partTimeIncomePerMonth: 0,
+  notes: 'แผนการเงินสำหรับ TCAS70',
+};
+
+export const initialQuests: QuestItem[] = [
+  {
+    id: 'q-1',
+    title: 'เลือกเป้าหมายมหาวิทยาลัยและคณะ',
+    description: 'เลือกหรือปรับเปลี่ยนคณะและมหาวิทยาลัยในฝันเพื่อให้น้องสกายบลูวางแผนเกณฑ์เฉพาะทาง',
+    category: 'university',
+    icon: 'school',
+    expReward: 150,
+    isCompleted: true,
+    actionTab: 'university',
+  },
+  {
+    id: 'q-2',
+    title: 'บันทึกคะแนนสอบจริงของคุณ',
+    description: 'กรอกผลคะแนนสอบจริงหรือคะแนนซ้อมสอบ TGAT/TPAT/A-Level เพื่อประเมินโอกาสติด',
+    category: 'score',
+    icon: 'assignment_turned_in',
+    expReward: 200,
+    isCompleted: false,
+    actionTab: 'exams',
+  },
+  {
+    id: 'q-3',
+    title: 'วางแผนจัดหน้าผลงาน Portfolio 10 หน้า',
+    description: 'ระบุหัวข้อผลงานที่คุณทำจริง และตรวจสอบเกณฑ์ที่คณะต้องการ',
+    category: 'portfolio',
+    icon: 'auto_stories',
+    expReward: 200,
+    isCompleted: false,
+    actionTab: 'portfolio',
+  },
+  {
+    id: 'q-4',
+    title: 'วางแผนงบประมาณค่าใช้จ่าย 4 ปี',
+    description: 'ใส่ค่าเทอม ค่าหอ และคำนวณเงินสนับสนุนเพื่อวิเคราะห์แผนการเงินกับน้องสกายบลู',
+    category: 'finance',
+    icon: 'account_balance_wallet',
+    expReward: 180,
+    isCompleted: false,
+    actionTab: 'finance',
+  },
+  {
+    id: 'q-5',
+    title: 'ปรึกษาน้องสกายบลูเพื่อจัดลำดับสิ่งที่ควรทำ',
+    description: 'พิมพ์คุยกับน้องสกายบลูตรงมุมขวาล่างเพื่อขอคำแนะนำลำดับก่อน-หลังในการเตรียมตัว',
+    category: 'ai',
+    icon: 'smart_toy',
+    expReward: 150,
+    isCompleted: false,
+  },
+  {
+    id: 'q-6',
+    title: 'ซ้อมทำข้อสอบจำลองกับน้องสกายบลู',
+    description: 'ฝึกทำแบบทดสอบที่ตรงกับคณะที่คุณเลือก',
+    category: 'score',
+    icon: 'quiz',
+    expReward: 220,
+    isCompleted: false,
+    actionTab: 'exams',
+  },
+];
+
+export const initialCleanExamScores: ExamScoreRecord[] = [];

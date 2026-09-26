@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Student profile, targets, study streak, level and preferences",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "school": { "type": "string" },
+        "educationPlan": { "type": "string" },
+        "gpax": { "type": "number" },
+        "targetUniversity": { "type": "string" },
+        "targetFaculty": { "type": "string" },
+        "targetProgram": { "type": "string" },
+        "targetRound": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "energyMode": { "type": "string", "enum": ["normal", "low", "catchup"] },
+        "streakDays": { "type": "number" },
+        "exp": { "type": "number" },
+        "level": { "type": "number" },
+        "theme": { "type": "string" },
+        "focusDuration": { "type": "number" },
+        "dndNight": { "type": "boolean" },
+        "googleSynced": { "type": "boolean" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "email"]
+    },
+    "UserStudyData": {
+      "title": "UserStudyData",
+      "description": "User specific study state including tasks, flashcards, projects, questions, targets and badges",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "tasks": { "type": "array" },
+        "vocabCards": { "type": "array" },
+        "projects": { "type": "array" },
+        "interviewQuestions": { "type": "array" },
+        "universities": { "type": "array" },
+        "achievements": { "type": "array" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile document owned strictly by the authenticated user"
+    },
+    "/users/{userId}/studyData/{docId}": {
+      "schema": "UserStudyData",
+      "description": "Synchronized study data and progress records for the user"
+    }
+  }
+}
