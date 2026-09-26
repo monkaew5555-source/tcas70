@@ -10,12 +10,14 @@ import {
   ExamScoreRecord,
   FinancialPlan,
   QuestItem,
-  QuestDifficulty
+  QuestDifficulty,
+  AppTheme
 } from '../types';
 import { initialUser, initialTasks, initialVocabCards, initialProjects, samplePortfolioTemplates, initialInterviewQuestions, initialUniversities, STUDENT_AVATAR } from '../data/initialData';
 import { initialAchievements } from '../data/achievementsData';
 import { defaultFinancialPlan, initialQuests, initialCleanExamScores } from '../data/tcasExtensions';
 import { triggerConfetti } from '../utils/particleEffect';
+import { THEME_OPTIONS, applyAppTheme } from '../data/themesData';
 import { 
   auth, 
   db, 
@@ -163,6 +165,26 @@ interface AppContextType {
   importDataJSON: (jsonStr: string) => boolean;
   resetAllData: () => void;
   clearToCleanState: () => void;
+
+  // Theme & Onboarding
+  currentTheme: AppTheme;
+  setCurrentTheme: (theme: AppTheme) => void;
+  hasCompletedOnboarding: boolean;
+  setHasCompletedOnboarding: (completed: boolean) => void;
+  openOnboardingPortal: () => void;
+  completeOnboarding: (data: {
+    name: string;
+    gpax: number;
+    school?: string;
+    educationPlan?: string;
+    university: UniversityTarget;
+    theme: AppTheme;
+  }) => void;
+
+  // Particle Effect
+  isParticleEnabled: boolean;
+  setIsParticleEnabled: (enabled: boolean) => void;
+  toggleParticle: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -336,6 +358,109 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [firebaseAuthUser, setFirebaseAuthUser] = useState<FirebaseUser | null>(null);
   const [isFirebaseConnected] = useState(true);
 
+  // Theme State
+  const [currentTheme, setCurrentThemeState] = useState<AppTheme>(() => {
+    try {
+      const saved = localStorage.getItem(`tcas70_theme_${currentUser.id}`);
+      if (saved && THEME_OPTIONS.some(t => t.id === saved)) return saved as AppTheme;
+      if (currentUser.theme && THEME_OPTIONS.some(t => t.id === currentUser.theme)) return currentUser.theme;
+    } catch {
+      // ignore
+    }
+    return 'sky';
+  });
+
+  // Particle Effect State
+  const [isParticleEnabled, setIsParticleEnabled] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('tcas70_particle_enabled');
+      if (saved !== null) return saved === 'true';
+    } catch {
+      // ignore
+    }
+    return true;
+  });
+
+  const toggleParticle = () => {
+    setIsParticleEnabled(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('tcas70_particle_enabled', String(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
+
+  // Onboarding Portal State
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(`tcas70_onboarded_${currentUser.id}`);
+      if (saved !== null) return saved === 'true';
+    } catch {
+      // ignore
+    }
+    return false;
+  });
+
+  // Apply theme on change
+  useEffect(() => {
+    applyAppTheme(currentTheme);
+    try {
+      localStorage.setItem(`tcas70_theme_${currentUser.id}`, currentTheme);
+    } catch {
+      // ignore
+    }
+  }, [currentTheme, currentUser.id]);
+
+  const setCurrentTheme = (theme: AppTheme) => {
+    setCurrentThemeState(theme);
+    updateUserProfile({ theme });
+    applyAppTheme(theme);
+    const themeObj = THEME_OPTIONS.find(t => t.id === theme);
+    if (themeObj) {
+      setAuthToast(`เปลี่ยนธีมเป็น: ${themeObj.name} (${themeObj.badge}) ✨`);
+    }
+  };
+
+  const completeOnboarding = (data: {
+    name: string;
+    gpax: number;
+    school?: string;
+    educationPlan?: string;
+    university: UniversityTarget;
+    theme: AppTheme;
+  }) => {
+    updateUserProfile({
+      name: data.name || currentUser.name,
+      gpax: data.gpax || currentUser.gpax,
+      school: data.school || currentUser.school,
+      educationPlan: data.educationPlan || currentUser.educationPlan,
+      targetUniversity: data.university.name,
+      targetFaculty: data.university.faculty,
+      targetProgram: data.university.program,
+      theme: data.theme,
+    });
+    setCustomPrimaryTarget(data.university);
+    setCurrentTheme(data.theme);
+    setHasCompletedOnboarding(true);
+    try {
+      localStorage.setItem(`tcas70_onboarded_${currentUser.id}`, 'true');
+    } catch {
+      // ignore
+    }
+  };
+
+  const openOnboardingPortal = () => {
+    setHasCompletedOnboarding(false);
+    try {
+      localStorage.setItem(`tcas70_onboarded_${currentUser.id}`, 'false');
+    } catch {
+      // ignore
+    }
+  };
+
   // Timer Effect
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -408,7 +533,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       streakDays: 1,
       exp: 100,
       level: 1,
-      theme: 'sweet-sky',
+      theme: 'sky',
       focusDuration: 45,
       dndNight: true,
       googleSynced: false,
@@ -454,7 +579,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       streakDays: 3,
       exp: 450,
       level: 3,
-      theme: 'sweet-sky',
+      theme: 'sky',
       focusDuration: 45,
       dndNight: true,
       googleSynced: false,
@@ -564,7 +689,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           streakDays: 7,
           exp: 3450,
           level: 14,
-          theme: 'sweet-sky',
+          theme: 'sky',
           focusDuration: 45,
           dndNight: true,
           googleSynced: true,
@@ -1287,7 +1412,18 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         exportDataJSON,
         importDataJSON,
         resetAllData,
-        clearToCleanState
+        clearToCleanState,
+
+        // Theme & Onboarding & Particles
+        currentTheme,
+        setCurrentTheme,
+        hasCompletedOnboarding,
+        setHasCompletedOnboarding,
+        openOnboardingPortal,
+        completeOnboarding,
+        isParticleEnabled,
+        setIsParticleEnabled,
+        toggleParticle
       }}
     >
       {children}

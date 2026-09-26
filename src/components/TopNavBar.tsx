@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { THEME_OPTIONS } from '../data/themesData';
 
 export const TopNavBar: React.FC = () => {
   const {
@@ -17,7 +18,12 @@ export const TopNavBar: React.FC = () => {
     setPrimaryTarget,
     lastSyncedText,
     logout,
-    firebaseAuthUser
+    firebaseAuthUser,
+    currentTheme,
+    setCurrentTheme,
+    isParticleEnabled,
+    setIsParticleEnabled,
+    openOnboardingPortal
   } = useApp();
 
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -25,9 +31,11 @@ export const TopNavBar: React.FC = () => {
   const [isTargetMenuOpen, setIsTargetMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const themeMenuRef = useRef<HTMLDivElement>(null);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -37,6 +45,9 @@ export const TopNavBar: React.FC = () => {
       }
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setIsUserMenuOpen(false);
+      }
+      if (themeMenuRef.current && !themeMenuRef.current.contains(e.target as Node)) {
+        setIsThemeMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -246,6 +257,71 @@ export const TopNavBar: React.FC = () => {
             )}
           </div>
 
+          {/* Quick Theme Selector Button & Dropdown (12 Themes) */}
+          <div ref={themeMenuRef} className="relative">
+            <button
+              onClick={() => { setIsThemeMenuOpen(!isThemeMenuOpen); setIsNotificationOpen(false); }}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors relative cursor-pointer ${
+                isThemeMenuOpen ? 'bg-sky-500 text-white' : 'hover:bg-[#e2e7ff] text-[#3e484f] hover:text-[#00668a]'
+              }`}
+              title="เปลี่ยนธีมสี (12 สไตล์) & พาติเคิล"
+            >
+              <span className="material-symbols-outlined text-[20px]">palette</span>
+            </button>
+
+            {isThemeMenuOpen && (
+              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white dark:bg-[#0f172a] rounded-3xl p-4 shadow-2xl border border-[#bdc8d1]/40 dark:border-slate-800 z-50 space-y-3 animate-in fade-in duration-150">
+                <div className="flex items-center justify-between pb-2 border-b border-[#bdc8d1]/20 dark:border-slate-800">
+                  <div className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-sky-500 text-[18px]">palette</span>
+                    <span className="text-[12px] font-extrabold text-[#131b2e] dark:text-white">เลือกธีมสี (12 ธีม)</span>
+                  </div>
+                  <label className="flex items-center gap-1.5 cursor-pointer text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                    <input
+                      type="checkbox"
+                      checked={isParticleEnabled}
+                      onChange={e => setIsParticleEnabled(e.target.checked)}
+                      className="w-3.5 h-3.5 text-sky-600 rounded"
+                    />
+                    <span>✨ พาติเคิล</span>
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
+                  {THEME_OPTIONS.map(theme => {
+                    const isSelected = currentTheme === theme.id;
+                    return (
+                      <button
+                        key={theme.id}
+                        type="button"
+                        onClick={() => { setCurrentTheme(theme.id); }}
+                        className={`p-2 rounded-xl text-left border flex items-center gap-2 transition-all cursor-pointer ${
+                          isSelected
+                            ? 'border-2 border-sky-500 bg-sky-50/70 dark:bg-sky-950/60 font-bold shadow-xs'
+                            : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60'
+                        }`}
+                      >
+                        <div
+                          className="w-4 h-4 rounded-full shrink-0 border border-black/10 shadow-xs"
+                          style={{ backgroundColor: theme.primaryColor }}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[11px] text-[#131b2e] dark:text-white truncate font-bold">
+                            {theme.name}
+                          </div>
+                          <div className="text-[9px] text-slate-400 truncate">
+                            {theme.badge}
+                          </div>
+                        </div>
+                        {isSelected && <span className="text-sky-500 text-[11px] font-black shrink-0">✓</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
           <button
             onClick={() => setActiveTab('settings')}
             className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#e2e7ff] hover:text-[#00668a] transition-colors cursor-pointer"
@@ -300,6 +376,13 @@ export const TopNavBar: React.FC = () => {
                     TCAS70 Connected
                   </span>
                 </div>
+                <button
+                  onClick={() => { openOnboardingPortal(); setIsUserMenuOpen(false); }}
+                  className="w-full text-left p-2 rounded-xl hover:bg-sky-50 dark:hover:bg-sky-950/40 flex items-center gap-2 text-sky-700 dark:text-sky-300 font-bold cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[18px]">tune</span>
+                  <span>เปลี่ยนมหาวิทยาลัย / หน้าตั้งค่าแรก</span>
+                </button>
                 <button
                   onClick={() => { setActiveTab('settings'); setIsUserMenuOpen(false); }}
                   className="w-full text-left p-2 rounded-xl hover:bg-[#f2f3ff] flex items-center gap-2 text-[#3e484f] cursor-pointer"

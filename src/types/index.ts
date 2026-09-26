@@ -1,3 +1,17 @@
+export type AppTheme = 
+  | 'sky'           // สีฟ้า
+  | 'sky-dark'      // สีฟ้าเข้มโทนมืด
+  | 'pink'          // สีชมพู
+  | 'pink-dark'     // สีชมพูโทนเข้มมืด
+  | 'purple'        // สีม่วง
+  | 'purple-dark'   // สีม่วงโทนเข้มมืด
+  | 'green'         // สีเขียว
+  | 'green-dark'    // สีเขียวโทนเข้มมืด
+  | 'orange'        // สีส้ม
+  | 'orange-dark'   // สีส้มโทนเข้มมืด
+  | 'classic'       // ดั้งเดิม
+  | 'classic-dark'; // ดั้งเดิมสีเข้ม
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -14,7 +28,7 @@ export interface UserProfile {
   streakDays: number;
   exp: number;
   level: number;
-  theme: 'sweet-sky' | 'night-study' | 'mint-focus' | 'sunset' | 'minimal';
+  theme: AppTheme;
   focusDuration: number; // in minutes
   dndNight: boolean;
   googleSynced: boolean;

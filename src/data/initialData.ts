@@ -19,7 +19,7 @@ export const initialUser: UserProfile = {
   streakDays: 7,
   exp: 3450,
   level: 14,
-  theme: 'sweet-sky',
+  theme: 'sky',
   focusDuration: 45,
   dndNight: true,
   googleSynced: true,

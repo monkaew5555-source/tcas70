@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { COMPANION_AVATAR } from '../data/initialData';
+import { THEME_OPTIONS } from '../data/themesData';
 
 export const SettingsView: React.FC = () => {
   const {
@@ -17,7 +18,12 @@ export const SettingsView: React.FC = () => {
     logout,
     firebaseAuthUser,
     isLoggingInWithGoogle,
-    isFirebaseConnected
+    isFirebaseConnected,
+    currentTheme,
+    setCurrentTheme,
+    isParticleEnabled,
+    setIsParticleEnabled,
+    openOnboardingPortal
   } = useApp();
 
   const [name, setName] = useState(currentUser.name);
@@ -102,6 +108,95 @@ export const SettingsView: React.FC = () => {
             <span className="material-symbols-outlined text-[16px]">check_circle</span>
             <span>บันทึกการเปลี่ยนแปลง</span>
           </button>
+        </div>
+      </section>
+
+      {/* Theme & Display Styles Card (All 12 Themes) */}
+      <section className="bg-white dark:bg-[#0f172a] p-6 rounded-3xl soft-cloud-card border border-[#bdc8d1]/30 dark:border-slate-800 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#bdc8d1]/20 dark:border-slate-800">
+          <div>
+            <h3 className="text-[16px] font-bold text-[#131b2e] dark:text-white flex items-center gap-2">
+              <span className="material-symbols-outlined text-sky-500">palette</span>
+              <span>ธีมสีและสไตล์การแสดงผล (12 ธีมสี)</span>
+            </h3>
+            <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">
+              เลือกโทนสีที่คุณชื่นชอบ สบายตา และเข้ากับบรรยากาศการอ่านหนังสือของคุณ
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Particle Toggle */}
+            <label className="flex items-center gap-2 cursor-pointer bg-slate-100 dark:bg-slate-800 px-3.5 py-1.5 rounded-full select-none">
+              <input
+                type="checkbox"
+                checked={isParticleEnabled}
+                onChange={e => setIsParticleEnabled(e.target.checked)}
+                className="w-4 h-4 text-sky-600 rounded focus:ring-sky-400 cursor-pointer"
+              />
+              <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                ✨ เอฟเฟกต์พาติเคิล
+              </span>
+            </label>
+
+            {/* Launch Initial Setup / Change Target */}
+            <button
+              type="button"
+              onClick={openOnboardingPortal}
+              className="px-3.5 py-1.5 rounded-full bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900 border border-sky-200 dark:border-sky-800 text-sky-700 dark:text-sky-300 text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-[16px]">tune</span>
+              <span>เปิดหน้าเลือกเป้าหมายเริ่มต้น</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          {THEME_OPTIONS.map(theme => {
+            const isSelected = currentTheme === theme.id;
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                onClick={() => setCurrentTheme(theme.id)}
+                className={`p-3 rounded-2xl text-left border transition-all cursor-pointer relative flex flex-col justify-between h-28 ${
+                  isSelected
+                    ? 'border-2 border-sky-500 shadow-md scale-[1.02] bg-sky-50/60 dark:bg-sky-950/50'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900/60'
+                }`}
+              >
+                {isSelected && (
+                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-sky-500 text-white flex items-center justify-center text-[10px] font-black shadow-sm">
+                    ✓
+                  </span>
+                )}
+                <div className="flex items-center gap-1.5">
+                  <div
+                    className="w-4 h-4 rounded-full border border-black/10 shadow-xs"
+                    style={{ backgroundColor: theme.primaryColor }}
+                  />
+                  <div
+                    className="w-3 h-3 rounded-full border border-black/10 shadow-xs"
+                    style={{ backgroundColor: theme.accentColor }}
+                  />
+                  <div
+                    className="w-2.5 h-2.5 rounded-full border border-black/10 shadow-xs"
+                    style={{ backgroundColor: theme.bgColor }}
+                  />
+                </div>
+                <div>
+                  <div className="text-[12px] font-extrabold text-slate-900 dark:text-white truncate">
+                    {theme.name}
+                  </div>
+                  <div className="text-[10px] text-slate-400 truncate mt-0.5">
+                    {theme.badge}
+                  </div>
+                </div>
+                <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                  {theme.category === 'dark' ? 'โหมดมืด' : 'โหมดสว่าง'}
+                </div>
+              </button>
+            );
+          })}
         </div>
       </section>
 

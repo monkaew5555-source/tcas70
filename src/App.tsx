@@ -6,6 +6,8 @@ import { MobileBottomNav } from './components/MobileBottomNav';
 import { AuthModal } from './components/AuthModal';
 import { SpeedQuizModal } from './components/SpeedQuizModal';
 import { SkyBlueAiCompanion } from './components/SkyBlueAiCompanion';
+import { InitialLoginPortal } from './components/InitialLoginPortal';
+import { AmbientParticles } from './components/AmbientParticles';
 
 // Views
 import { DashboardView } from './views/DashboardView';
@@ -20,30 +22,60 @@ import { FinanceView } from './views/FinanceView';
 import { SettingsView } from './views/SettingsView';
 
 const MainLayout: React.FC = () => {
-  const { activeTab, authToast, setAuthToast } = useApp();
+  const { activeTab, authToast, setAuthToast, hasCompletedOnboarding } = useApp();
+
+  // Show Initial Login Portal before accessing the website if not onboarded
+  if (!hasCompletedOnboarding) {
+    return (
+      <>
+        <AmbientParticles />
+        <InitialLoginPortal />
+        {/* Toast Notification */}
+        {authToast && (
+          <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-3 duration-200">
+            <div className="px-4 py-2.5 rounded-2xl bg-[#00668a] text-white text-[13px] font-bold shadow-xl flex items-center gap-2 border border-[#38bdf8]/40">
+              <span className="material-symbols-outlined text-[18px]">info</span>
+              <span>{authToast}</span>
+              <button
+                onClick={() => setAuthToast(null)}
+                className="ml-2 hover:opacity-75 cursor-pointer text-white"
+              >
+                <span className="material-symbols-outlined text-[14px]">close</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
 
   return (
-    <div className="flex min-h-screen bg-[#faf8ff] text-[#131b2e] selection:bg-[#c4e7ff] selection:text-[#001e2c]">
+    <div className="flex min-h-screen bg-[#faf8ff] dark:bg-[#07101e] text-[#131b2e] dark:text-slate-100 selection:bg-[#c4e7ff] selection:text-[#001e2c] relative">
+      {/* Background Floating Particle Effect */}
+      <AmbientParticles />
+
       {/* Desktop Persistent Left Navigation */}
       <SideNavBar />
 
       {/* Main Content Area */}
-      <div className="flex-1 lg:ml-64 flex flex-col min-h-screen min-w-0 pb-16 lg:pb-6">
+      <div className="flex-1 lg:ml-64 flex flex-col min-h-screen min-w-0 pb-16 lg:pb-6 relative z-20">
         {/* Sticky Top Navigation Bar with Search and Profile */}
         <TopNavBar />
 
-        {/* Dynamic Main View */}
+        {/* Dynamic Main View with Smooth Page Transition */}
         <main className="flex-1 px-4 sm:px-6 lg:px-8 py-5 max-w-7xl w-full mx-auto">
-          {activeTab === 'dashboard' && <DashboardView />}
-          {activeTab === 'today' && <TodayView />}
-          {activeTab === 'plan' && <PlanView />}
-          {activeTab === 'university' && <UniversityView />}
-          {activeTab === 'portfolio' && <PortfolioView />}
-          {activeTab === 'exams' && <MockExamView />}
-          {activeTab === 'english' && <EnglishView />}
-          {activeTab === 'interview' && <InterviewView />}
-          {activeTab === 'finance' && <FinanceView />}
-          {activeTab === 'settings' && <SettingsView />}
+          <div key={activeTab} className="view-enter">
+            {activeTab === 'dashboard' && <DashboardView />}
+            {activeTab === 'today' && <TodayView />}
+            {activeTab === 'plan' && <PlanView />}
+            {activeTab === 'university' && <UniversityView />}
+            {activeTab === 'portfolio' && <PortfolioView />}
+            {activeTab === 'exams' && <MockExamView />}
+            {activeTab === 'english' && <EnglishView />}
+            {activeTab === 'interview' && <InterviewView />}
+            {activeTab === 'finance' && <FinanceView />}
+            {activeTab === 'settings' && <SettingsView />}
+          </div>
         </main>
       </div>
 
